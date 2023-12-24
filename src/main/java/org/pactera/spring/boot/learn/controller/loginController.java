@@ -12,8 +12,13 @@ import java.util.List;
 
 @Controller
 public class loginController {
+    /**
+     * goToLoginPage
+     * @param model Model
+     * @return goToLoginPage
+     */
     @GetMapping(value = "goToLoginPage")
-    public String toLoginPage(Model model) {
+    public String goToLoginPage(Model model) {
         List<String> usernames = new ArrayList<>();
         usernames.add("LiSa");
         usernames.add("Joey");
@@ -23,8 +28,13 @@ public class loginController {
         return "login.html";
     }
 
+    /**
+     * toLoginPage
+     * @param user UserDataDTO
+     * @return Login
+     */
     @PostMapping(value = "login")
-    public String toLoginPage(@ModelAttribute UserDataDTO user) {
+    public String login(@ModelAttribute UserDataDTO user) {
         System.out.println(user.getUsername());
         System.out.println(user.getPassword());
         return "login.html";
