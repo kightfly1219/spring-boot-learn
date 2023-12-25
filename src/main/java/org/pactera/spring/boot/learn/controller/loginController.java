@@ -1,6 +1,6 @@
 package org.pactera.spring.boot.learn.controller;
 
-import org.pactera.spring.boot.learn.dto.UserDataDTO;
+import org.pactera.spring.boot.learn.model.dto.UserDataDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
