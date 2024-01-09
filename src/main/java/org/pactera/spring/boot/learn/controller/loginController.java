@@ -35,8 +35,8 @@ public class loginController {
      */
     @PostMapping(value = "login")
     public String login(@ModelAttribute UserDataDTO user) {
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
+        System.out.println(user.getName());
+        System.out.println(user.getAge());
         return "login.html";
     }
 }

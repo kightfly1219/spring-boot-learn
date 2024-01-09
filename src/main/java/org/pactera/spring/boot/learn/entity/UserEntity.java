@@ -1,12 +1,12 @@
-package org.pactera.spring.boot.learn.model.vo;
+package org.pactera.spring.boot.learn.entity;
 
 import lombok.Data;
 
 /**
- * 用户VO
+ * 用户Entity
  */
 @Data
-public class UserDataVO {
+public class UserEntity {
     /** 主键ID */
     private Long id;
     /** 姓名 */
