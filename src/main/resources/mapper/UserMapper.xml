@@ -40,7 +40,7 @@
             useGeneratedKeys="true"
             keyProperty="req.id">
         INSERT INTO user (name, age, email, avatar)
-        VALUES (#{req.name}, #{req.age}, #{req.email}, #{req.avatar})
+        VALUE (#{req.name}, #{req.age}, #{req.email}, #{req.avatar})
     </insert>
 
     <!-- 新增用户，多条插入语句 -->
@@ -59,11 +59,20 @@
     <update id="updateUser"
             parameterType="org.pactera.spring.boot.learn.entity.UserEntity">
         UPDATE user
-        SET
-        name   = #{req.name},
-        age    = #{req.age},
-        email  = #{req.email},
-        avatar = #{req.avatar}
+        <set>
+            <if test="req.name != null and req.name != ''">
+                name   = #{req.name},
+            </if>
+            <if test="req.age != null">
+                age    = #{req.age},
+            </if>
+            <if test="req.email != null and req.email != ''">
+                email = #{req.email},
+            </if>
+            <if test="req.avatar != null and req.avatar != ''">
+                avatar = #{req.avatar},
+            </if>
+        </set>
         WHERE id = #{req.id}
     </update>
 
