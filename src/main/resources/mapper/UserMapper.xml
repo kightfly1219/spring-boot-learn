@@ -13,13 +13,14 @@
             AND id = #{req.id}
         </if>
         <if test="req.name != null and req.name != ''">
-            AND name = #{req.name}
+            AND name = CONCAT('%', #{req.name} , '%')
         </if>
         <if test="req.age != null">
             AND age = #{req.age}
         </if>
         <if test="req.email != null and req.email != ''">
-            AND email = #{req.email}
+            <bind name="emailLike" value="'%' + req.email + '%'"/>
+            AND email = #{emailLike}
         </if>
         <if test="req.avatar != null and req.avatar != ''">
             AND avatar = #{req.avatar}
