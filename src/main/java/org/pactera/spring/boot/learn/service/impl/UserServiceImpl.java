@@ -8,7 +8,6 @@ import org.pactera.spring.boot.learn.model.dto.UserDataDTO;
 import org.pactera.spring.boot.learn.model.vo.UserDataVO;
 import org.pactera.spring.boot.learn.service.IUserService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,8 +45,7 @@ public class UserServiceImpl implements IUserService {
      * @return 用户详情
      */
     @Override
-    @Transactional(rollbackFor = Exception.class
-            , isolation = Isolation.READ_COMMITTED)
+    @Transactional(rollbackFor = Exception.class)
     public UserDataVO getUserDetail(Long id) {
         UserDataVO vo = new UserDataVO();
         UserEntity userEntity = userMapper.getUserDetail(id);
@@ -68,9 +66,7 @@ public class UserServiceImpl implements IUserService {
      * isolation = Isolation.DEFAULT
      */
     @Override
-    @Transactional(rollbackFor = Exception.class
-            , isolation = Isolation.DEFAULT
-            , propagation = Propagation.REQUIRED)
+    @Transactional(rollbackFor = Exception.class)
     public Boolean insertUser(UserDataDTO requestDto) {
         if (requestDto == null) {
             log.info("userDataDTO : null");

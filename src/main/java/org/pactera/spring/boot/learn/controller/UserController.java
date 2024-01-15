@@ -36,7 +36,7 @@ public class UserController {
      * @return 用户VO
      */
     @GetMapping("/user")
-    @Cacheable(value = "userCache", key = "#id")
+    @Cacheable(value = "userCache")
     public R<List<UserDataVO>> getUserList(UserDataDTO requestDto) {
         List<UserDataVO> userList = userService.getUserList(requestDto);
         return R.ok(userList);
@@ -61,7 +61,6 @@ public class UserController {
      * @return 用户VO
      */
     @PostMapping("/user")
-    @CacheEvict(value = "userCache", key = "#id")
     public R<UserDataVO> insertUser(@RequestBody UserDataDTO requestDto) throws AccessDeniedException {
         if ("admin".equals(requestDto.getName())) {
             throw new ServiceException("insertUser 抛出的自定义异常");
@@ -75,8 +74,6 @@ public class UserController {
         if (isSuccess) {
             BeanUtils.copyProperties(requestDto, userDataVO);
         }
-        // 将用户缓存到内存中
-        Long id = userDataVO.getId();
         return R.ok(userDataVO);
     }
 
@@ -86,7 +83,7 @@ public class UserController {
      * @return 用户VO
      */
     @PostMapping("/userList")
-    @CacheEvict(value = "userCache", key = "#id")
+    @CacheEvict("userCache")
     public R<List<UserDataVO>> insertUserList(@RequestBody List<UserDataDTO> dtoList) {
         List<UserDataVO> userList = new ArrayList<>();
         Boolean isSuccess = userService.insertUserList(dtoList);
@@ -107,7 +104,7 @@ public class UserController {
      * @return 用户VO
      */
     @PutMapping("/user")
-    @CacheEvict(value = "userCache", key = "#id")
+    @CacheEvict(value = "userCache", key = "#requestDto.id")
     public R<UserDataVO> updateUser(@RequestBody UserDataDTO requestDto) {
         UserDataVO userDataVO = new UserDataVO();
         Boolean isSuccess = userService.updateUser(requestDto);
