@@ -8,7 +8,10 @@ import org.pactera.spring.boot.learn.model.dto.UserDataDTO;
 import org.pactera.spring.boot.learn.model.vo.UserDataVO;
 import org.pactera.spring.boot.learn.service.IUserService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -31,6 +34,7 @@ public class UserServiceImpl implements IUserService {
      * @return 用户VO
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<UserDataVO> getUserList(UserDataDTO requestDto) {
         return userMapper.getUserList(requestDto);
     }
@@ -42,6 +46,8 @@ public class UserServiceImpl implements IUserService {
      * @return 用户详情
      */
     @Override
+    @Transactional(rollbackFor = Exception.class
+            , isolation = Isolation.READ_COMMITTED)
     public UserDataVO getUserDetail(Long id) {
         UserDataVO vo = new UserDataVO();
         UserEntity userEntity = userMapper.getUserDetail(id);
@@ -54,9 +60,17 @@ public class UserServiceImpl implements IUserService {
      *
      * @param requestDto 用户DTO
      * @return true:成功 false:失败
+     *
+     * Spring事务传播类型
+     * propagation = Propagation.REQUIRED
+     *
+     * 理解事务的4种隔离级别
+     * isolation = Isolation.DEFAULT
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class
+            , isolation = Isolation.DEFAULT
+            , propagation = Propagation.REQUIRED)
     public Boolean insertUser(UserDataDTO requestDto) {
         if (requestDto == null) {
             log.info("userDataDTO : null");
@@ -78,6 +92,7 @@ public class UserServiceImpl implements IUserService {
      * @return true:成功 false:失败
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean insertUserList(List<UserDataDTO> dtoList) {
         if (dtoList == null || dtoList.size() == 0) {
             return false;
@@ -143,6 +158,7 @@ public class UserServiceImpl implements IUserService {
      * @return true:成功 false:失败
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteUser(Long id) {
         if (id == null) {
             return false;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class loginController {
+public class LoginController {
     /**
      * goToLoginPage
      * @param model Model
