@@ -1,7 +1,9 @@
 package org.pactera.spring.boot.learn.service.impl;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.pactera.spring.boot.learn.common.MinioTemplate;
 import org.pactera.spring.boot.learn.entity.UserEntity;
 import org.pactera.spring.boot.learn.mapper.UserMapper;
 import org.pactera.spring.boot.learn.model.dto.UserDataDTO;
@@ -9,11 +11,8 @@ import org.pactera.spring.boot.learn.model.vo.UserDataVO;
 import org.pactera.spring.boot.learn.service.IUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +22,18 @@ import java.util.List;
 @Service
 @Slf4j
 public class UserServiceImpl implements IUserService {
-    @Resource
-    private UserMapper userMapper;
+
+    private final UserMapper userMapper;
+
+    /**
+     * MinioTemplate
+     */
+    private final MinioTemplate minioTemplate;
+
+    public UserServiceImpl(UserMapper userMapper, MinioTemplate minioTemplate) {
+        this.userMapper = userMapper;
+        this.minioTemplate = minioTemplate;
+    }
 
     /**
      * 获取用户列表
@@ -90,7 +99,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean insertUserList(List<UserDataDTO> dtoList) {
-        if (dtoList == null || dtoList.size() == 0) {
+        if (dtoList == null || dtoList.isEmpty()) {
             return false;
         }
         List<UserEntity> entityList = new ArrayList<>();
@@ -153,12 +162,26 @@ public class UserServiceImpl implements IUserService {
      * @param id 用户ID
      * @return true:成功 false:失败
      */
+    @SneakyThrows
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteUser(Long id) {
         if (id == null) {
             return false;
         }
-        return userMapper.deleteUser(id) == 1;
+
+        UserEntity userEntity = userMapper.getUserDetail(id);
+        if (userEntity == null ) {
+            return false;
+        }
+        String avatar = userEntity.getAvatar();
+
+        int deleteCount = userMapper.deleteUser(id);
+        if (deleteCount == 1) {
+            minioTemplate.delObject(avatar);
+            return true;
+        }
+
+        return false;
     }
 }
