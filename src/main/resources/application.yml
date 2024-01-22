@@ -7,7 +7,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3307/learn_spring_eric?useUnicode=true&characterEncoding=utf-8&useSSL=true
     username: root
-    password: root
+    password: rppt
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
 
 mybatis:
   configuration:
@@ -15,3 +19,9 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: org.pactera.spring.boot.learn.mapper
+
+
+minio:
+  access-key: vbfoX8D2NuKHSGQxX2wa
+  secret-key: mMaiCHNiKmP418VKfOyAmGFciSpstlEy9rkVs9D5
+  endpoint: http://127.0.0.1:9000

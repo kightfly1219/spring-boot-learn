@@ -1,6 +1,7 @@
 package org.pactera.spring.boot.learn.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.pactera.spring.boot.learn.common.MinioTemplate;
 import org.pactera.spring.boot.learn.common.R;
 import org.pactera.spring.boot.learn.exception.ServiceException;
 import org.pactera.spring.boot.learn.model.dto.UserDataDTO;
@@ -10,9 +11,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +34,17 @@ public class UserController {
     /**
      * 用户服务
      */
-    @Resource
-    private IUserService userService;
+    private final IUserService userService;
+
+    /**
+     * MinioTemplate
+     */
+    private final MinioTemplate minioTemplate;
+
+    public UserController(IUserService userService, MinioTemplate minioTemplate) {
+        this.userService = userService;
+        this.minioTemplate = minioTemplate;
+    }
 
     /**
      * 获取用户列表
@@ -126,5 +142,37 @@ public class UserController {
         log.info("用户情报删除API--- 用户ID:" + id);
         Boolean isSuccess = userService.deleteUser(id);
         return R.ok(isSuccess);
+    }
+
+    @PostMapping("upload")
+    public R<Boolean> upload(@RequestParam("file") MultipartFile file) {
+        if (!file.isEmpty()) {
+            try {
+                String uploadDir = "/Users/eric/SpringBoot_训练营/upload/20240115";
+                File uploadDirFile = new File(uploadDir);
+                if (!uploadDirFile.exists()) {
+                    uploadDirFile.mkdirs();
+                }
+                Path filePath = Path.of(uploadDir, file.getOriginalFilename());
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("File uploaded: " + file.getOriginalFilename());
+                return R.ok(true);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return R.error(e);
+            }
+        } else {
+            return R.error();
+        }
+    }
+
+    /**
+     * 长传头像
+     *
+     * @return {@link String} 图片链接
+     */
+    @PostMapping("uploadAvatar")
+    public R<String> uploadAvatar(@RequestParam("file") MultipartFile file) throws Exception {
+        return R.ok(minioTemplate.putObject(file.getInputStream(), file.getContentType()));
     }
 }
